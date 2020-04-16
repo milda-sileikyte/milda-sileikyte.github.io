@@ -64,7 +64,7 @@ PHOTO (AVATAR)
   line-height: 1.5em;
 }
 #text-header h1 span{
-  color: #F0563D;
+  color: #fc2e6a;
 }
 #text-header h1 sup{
   opacity: 0.5;
@@ -84,7 +84,7 @@ DEFAULT BOX
   margin-bottom: 15px;
 }
 .box h2{
-  color: #EC7263;
+  color: #ff5989;
   font-size: 1.8em;
   font-weight: 700;
   text-transform: uppercase;
@@ -114,13 +114,13 @@ EDUCATION
   top: 0;
   content: ' ';
   display: block;
-  background: #ec7263;
-  background: -moz-linear-gradient(top,  #ffffff 0%, #ec7263 7%, #ec7263 89%, #ffffff 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(7%,#ec7263), color-stop(89%,#ec7263), color-stop(100%,#ffffff));
-  background: -webkit-linear-gradient(top,  #ffffff 0%,#ec7263 7%,#ec7263 89%,#ffffff 100%);
-  background: -o-linear-gradient(top,  #ffffff 0%,#ec7263 7%,#ec7263 89%,#ffffff 100%);
-  background: -ms-linear-gradient(top,  #ffffff 0%,#ec7263 7%,#ec7263 89%,#ffffff 100%);
-  background: linear-gradient(to bottom,  #ffffff 0%,#ec7263 7%,#ec7263 89%,#ffffff 100%);
+  background: #ff5989;
+  background: -moz-linear-gradient(top,  #ffffff 0%, #ff5989 7%, #ff5989 89%, #ffffff 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(7%,#ff5989), color-stop(89%,#ff5989), color-stop(100%,#ffffff));
+  background: -webkit-linear-gradient(top,  #ffffff 0%,#ff5989 7%,#ff5989 89%,#ffffff 100%);
+  background: -o-linear-gradient(top,  #ffffff 0%,#ff5989 7%,#ff5989 89%,#ffffff 100%);
+  background: -ms-linear-gradient(top,  #ffffff 0%,#ff5989 7%,#ff5989 89%,#ffffff 100%);
+  background: linear-gradient(to bottom,  #ffffff 0%,#ff5989 7%,#ff5989 89%,#ffffff 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 #education li{
@@ -232,7 +232,7 @@ SKILLS
 *******************************************/
 .item-skills{
   height: 30px;
-  background: #F0563D;
+  background: #fc2e6a;
   color: #fff;
   padding: 5px 10px;
   margin-bottom: 5px;
@@ -302,7 +302,7 @@ LANGUAGES
   background: url(../img/star-grey.png) no-repeat;
 }
 #language-skills .skill .icons-red{
-  background: url(../img/star-red.png) no-repeat;
+  background: url(../img/star-yellow.png) no-repeat;
 }
 /*******************************************
 HOBBIES
@@ -313,7 +313,7 @@ HOBBIES
   margin-right: 5px;
   margin-bottom: 5px;
   padding: 5px 5px 5px 25px;
-  background: #A75265;
+  background: #891f84;
   position: relative;
   font-size: 1.2em;
 }
