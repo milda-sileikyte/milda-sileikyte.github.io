@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Retrofit</title>
+
+		<meta name="description" content="An introduction to Retrofit. A library from Square.">
+		<meta name="author" content="Christian Askeland">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<img src="img/knowit_logo_white_rgb.png" style="height: 40px; left: 20px; bottom: 20px; position: absolute; border:0; background-color: inherit; box-shadow: 0 0 0 0; z-index: 9999"/>
+				
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="#199C87">
+                    <div id="main-bg" style="position: relative;">
+                    	<div style="width: 60%; height: 100%; position: absolute; left: 0">
+                    		<div style="position: absolute; height: 300px; width: 600px; top: 50%; right: 100px; margin-top: -150px;">
+                    			<h1>Retrofit</h1>
+								<p><b>- easy peasy API consumpsion</b></p>
+                    		</div>
+                    	</div>
+                    	<div style="width: 40%; height: 100%; background: #fff; position: absolute; right: 0">
+                    		<div style="position: absolute; height: 400px; width: 300px; top: 50%; left: 100px; margin-top: -200px;">
+								<img style="border-radius: 100px;" src="img/christian_askeland.jpg">                   		
+                    			<p style="color: #222; margin-top: -20px;">
+                    				Christian Askeland<br />
+                                    <small>Knowit Objectnet<br />
+                    				<a href="http://twitter.com/kokeboken">@kokeboken</a></small>
+                    			</p>
+                    		</div>
+                    	</div>
+                    </div>
+                    
+                    <aside class="notes">
+                    	<ul>
+        				<li>Hei, jeg heter Christian Askeland og jeg jobber som mobilutvikler hos Knowit. Jeg har de siste månedene jobbet properitær og lukket teknologi. Jeg har utviklet RuterReise for iOS som ble lansert forrige uke og har da hovedsakelig jobbet med Swift. MEN, jeg har heldigvis også fått tid til å utvikle på Android ved siden av og forhåpentligvis kan jeg dele litt av mine erfaringer med dere her i dag.</li>
+        				</ul>
+    				</aside>
+    
+				</section>
+				
+				<section data-background="img/heart.png" data-background-size="700px" data-background-transition="zoom">
+					<h2>MOBILE APPS</h2>
+					<h2>+</h2>
+					<h2>INTERNET</h2>
+					
+					<aside class="notes">
+                    	<ul>
+        				<li>Vi laster ned data, deler bilder, chatter med venner og swiper til høyre.</li>
+        				<li>Dette skjer gjerne via HTTP API’er, og idag snakker man da om REST og JSON.</li> 
+        				<li>Kommunikasjon og deling av data er så viktig og som utvikler burde man nesten forvente at mobilen kunne hente data på en enkel måte, men det er dessverre ikke alltid tilfelle.</li> 
+						<li>Helt siden jeg skrev min første Android app til Android 2.2 har jeg følt smerten ved håndtering av tråder, feilhåndtering, parsing av JSON og et femtitalls linjer med boilerplate før det “skjer noe”. Heldigvis fant jeg Retrofit</li>
+						</ul>
+    				</aside>			
+				</section>
+				
+				<section>
+					<h2>RETROFIT</h2>
+					<blockquote cite="http://square.github.io/retrofit/">
+						&ldquo;Retrofit turns your HTTP API into a Java interface.&rdquo;
+					</blockquote>
+					
+					<aside class="notes">
+                    	<ul>
+        				<li>Dette er slik Retrofit beskriver seg selv på nettsiden sin, og min første tanke da jeg så det var, “Hmm, javel… Det hørtes jo ok ut, men hva betyr det egentlig?”</li>
+        				<li>Fakta er at det faktisk er ganske enkelt, da hovedideen bak Retrofit er at den tar et eksternt API og gjør det om (mapper det) til et Java grensesnitt, slik at du kan kalle eksterne webtjenester akkurat slik du kaller metoder i Java-koden din.</li>
+        				<li>Jeg skal vise dere hvordan Retrofit får mobilapplikasjonen din til å kommunisere med Internett-omverdenen til en lek.</li>
+						<li>Jeg må advare dere om at det kommer til å vises en del kode i slidene nå, men det er fordi jeg i stedet for å bare fortelle dere hvor kult og enkelt Retrofit er, faktisk heller vil vise dere det.</li>
+						</ul>
+    				</aside>
+				</section>
+
+				<section>
+					<p><code data-trim>GET http://myapi.com/movie/1337</code></p>
+					<pre class="hljs js">
+{
+	"id": 1337,
+	"title": "Revenge of the Nerds"
+	"release_date": "1984-08-10"
+}</pre>
+				</section>
+				
+				<section>
+					
+					<p><code data-trim>GET http://myapi.com/movie/1337</code></p>
+					
+					<pre class="hljs java">
+public interface MovieService {
+    <span class="fragment hljs-title">@GET("/movie/{id}")</span>
+    <span class="fragment hljs-title">Call&lt;</span>Movie<span class="fragment hljs-title">></span> getMovie(<span class="fragment hljs-title">@Path("id")</span> int movieId);
+}</pre>
+
+
+					<pre class="fragment"><code data-trim>
+Retrofit retrofit = new Retrofit.Builder()
+    .baseUrl("http://myapi.com")
+    .addConverterFactory(GsonConverterFactory.create())
+    .build();
+
+MovieService service = retrofit.create(MovieService.class);
+
+					</code></pre>
+					
+					<pre class="fragment"><code data-trim>
+Call&lt;Movie> call = service.getMovie(1337);
+Movie movie = call.execute().body();
+					</code></pre>
+				</section>
+				
+				<section>
+					
+					<h4>Query parameters</h4>
+					
+					<pre class="hljs java">
+<span class="hljs-annotation">@GET</span>(<span class="hljs-string">"/movie/{id}<span class="fragment highlight-current-green hljs-string">?include_cast=true</span>"</span>)
+Call&lt;Movie> <span class="hljs-title">getMovie</span>(<span class="hljs-annotation">@Path</span>(<span class="hljs-string">"id"</span>) int movieId);
+
+<span class="hljs-comment">// GET /movie/1337<span class="fragment highlight-current-green">?include_cast=true</span> HTTP/1.1</span></pre>
+					
+					<pre class="fragment hljs java">
+<span class="hljs-annotation">@GET</span>(<span class="hljs-string">"/movie/{id}"</span>)
+Call&lt;Movie> <span class="hljs-title">getMovie</span>(<span class="hljs-annotation">@Path</span>(<span class="hljs-string">"id"</span>) int movieId,
+	<span class="fragment highlight-current-green">@Query("include_cast")</span> boolean includeCast);
+	
+<span class="hljs-comment">// GET /movie/1337<span class="fragment highlight-current-green">?include_cast=true</span> HTTP/1.1</span></pre>
+					
+					<pre class="fragment hljs java">
+<span class="hljs-annotation">@GET</span>(<span class="hljs-string">"/movie/{id}"</span>)
+Call&lt;Movie> <span class="hljs-title">getMovie</span>(<span class="hljs-annotation">@Path</span>(<span class="hljs-string">"id"</span>) int movieId,
+	<span class="fragment highlight-current-green">@QueryMap Map&lt;String, String></span> options);</pre>
+				
+				</section>
+				
+				<section>
+						<h4>POST</h4>
+						
+						<pre class="hljs java">
+<span class="fragment highlight-current-green hljs-annotation">@POST</span>(<span class="hljs-string">"/movie/{id}/rating"</span>)
+<span class="hljs-keyword">Call&lt;RatingResult></span> <span class="hljs-title">addRating</span>(<span class="hljs-annotation">@Path</span>(<span class="hljs-string">"id"</span>) int movieId,
+	<span class="fragment highlight-current-green hljs-annotation">@Body</span> MovieRating rating);
+	
+<span class="fragment highlight-current hljs-comment">// POST /movie/1337/rating
+// Content-Length: 28
+//
+// { "id": 1337, "rating": 10 }</span></pre>
+					
+					<pre class="fragment hljs java">
+<span class="fragment highlight-current-green hljs-annotation">@FormUrlEncoded</span>
+<span class="hljs-annotation">@POST</span>(<span class="hljs-string">"/login"</span>)
+<span class="hljs-keyword">Call&lt;LoginResult></span> <span class="hljs-title">loginUser</span>(<span class="fragment highlight-current-green">@Field("username")</span> String username,
+	<span class="fragment highlight-current-green">@Field("password")</span> String password);
+	
+<span class="fragment highlight-current hljs-comment">// POST /login
+// Content-Length: 27
+// Content-Type: application/x-www-form-urlencoded
+//
+// username=ping&password=pong</span></pre>
+				</section>
+				
+				<section>
+						<h4>HEADERS</h4>
+						
+						<pre class="hljs java">
+<span class="fragment highlight-current-green">@Headers({
+    "X-AppLanguage: no",
+    "User-Agent: KDS-Is-Awesome"
+})</span>
+<span class="hljs-annotation">@GET</span>(<span class="hljs-string">"/movie/{id}/ratings"</span>)					
+Call&lt;List&lt;MovieRating>> getRatings(<span class="hljs-annotation">@Path</span>(<span class="hljs-string">"id"</span>) int movieId);
+
+<span class="hljs-comment">// GET /movie/1337/rating HTTP/1.1
+<span class="fragment highlight-current-green">// X-AppLanguage: no
+// User-Agent: KDS-Is-Awesome</span></span></pre>
+					
+					<pre class="fragment hljs java">
+<span class="hljs-annotation">@GET</span>(<span class="hljs-string">"/user"</span>)
+Call&lt;User> <span class="hljs-title">getUser</span>(<span class="fragment highlight-current-green">@Header("Authorization")</span> String authorization);
+
+<span class="hljs-comment">// GET /user HTTP/1.1
+// <span class="fragment highlight-current-green">Authorization: MY_SECRET_TOKEN</span></span></pre>
+				</section>
+				
+				<section>
+						<h4>Request Interceptors</h4>
+						
+						<pre class="hljs java">
+<span class="fragment highlight-current-green">OkHttpClient client = new OkHttpClient()</span>
+client.interceptors().add(<span class="hljs-keyword">new</span> Interceptor() {
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-keyword">public Response</span> <span class="hljs-title">intercept</span>(Chain chain) throws IOException {
+        HttpUrl url = chain.request().httpUrl().newBuilder()
+            <span class="fragment highlight-current-green">.addQueryParameter(<span class="hljs-string">"token"</span>, <span class="hljs-string">"MY_APP_TOKEN"</span>)</span>
+            .build();
+        
+        Request request = chain.request().newBuilder()
+            <span class="fragment highlight-current-green">.header(<span class="hljs-string">"Accept"</span>, <span class="hljs-string">"application/json"</span>)</span>
+            .url(url)
+            .build();
+        
+        return chain.proceed(request);
+    }
+});</pre>
+					
+					<pre class="fragment"><code data-trim>
+Retrofit retrofit = new Retrofit.Builder()
+    .baseUrl("http://myapi.com")
+    .client(client)
+    .build();
+					</code></pre>
+				</section>
+				
+				<section>
+						<h4>SYNCHRONOUS VS. ASYNCHRONOUS</h4>
+						
+						<pre><code data-trim>
+@GET("/movie/{id}")
+Call&lt;Movie> getMovie(@Path("id") int movieId);
+					</code></pre>
+					
+					<pre class="fragment"><code data-trim>
+Call&lt;Movie> call = service.getMovie(1337);
+Movie movie = call.excute();
+					</code></pre>
+                    
+                    <pre class="fragment"><code data-trim>
+Call&lt;Movie> call2 = call.clone();
+
+call2.enqueue(new Callback&lt;Movie>(){
+    @Override
+    public void onResponse(Response&lt;Movie> response, Retrofit retrofit) {}
+        
+    @Override
+    public void onFailure(Throwable t) {}
+);
+                    </code></pre>
+                    
+                    <pre class="fragment"><code data-trim>
+/* And YES, Call is cancellable!! */
+call.cancel()
+                    </code></pre>
+					
+				</section>
+				
+				<section>
+					
+					<pre class="hljs java">
+Retrofit retrofit = new Retrofit.Builder()
+    <span class="fragment highlight-current-green">.baseUrl("https://myapi.com")</span>
+    <span class="fragment highlight-current-green">.client(new OkHttpClient())</span>
+    <span class="fragment highlight-current-green">.addCallAdapterFactory(RxJavaCallAdapterFactory.create())</span>
+    <span class="fragment highlight-current-green">.addConverterFactory(GsonConverterFactory.create())</span>
+    .build();
+}</pre>
+<ul class="fragment" style="font-size: 80%; list-style: none;">
+    <li>Gson: <span style="color: #777">com.squareup.retrofit:converter-gson</span></li>
+    <li>Jackson: <span style="color: #777">com.squareup.retrofit:converter-jackson</span></li>
+    <li>Moshi: <span style="color: #777">com.squareup.retrofit:converter-moshi</span></li>
+    <li>Protobuf: <span style="color: #777">com.squareup.retrofit:converter-protobuf</span></li>
+    <li>Wire: <span style="color: #777">com.squareup.retrofit:converter-wire</span></li>
+    <li>Simple XML: <span style="color: #777">com.squareup.retrofit:converter-simplexml</span></li>
+</ul>
+                </section>
+				
+				<section>
+					
+					<h4>Summary</h4>
+					
+					<pre><code data-trim>
+public interface MovieService {
+    @GET("/movie/{id}")</span>
+    Call&lt;Movie> getMovie(@Path("id") int movieId);
+}
+
+public static void main(String[] args){
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl("http://myapi.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
+
+    MovieService service = retrofit.create(MovieService.class);
+    Movie movie = service.getMovie(1337).execute().body();
+    
+    System.out.println("My favourite movie is " + movie.title);	
+}
+
+// Model
+public class Movie {
+	public int id;
+	@SerializedName("release_date")
+	public Date releaseDate;
+	public String title;
+}
+					</code></pre>
+				</section>
+				
+				<section>
+					<section>
+						<h3>Feedback or questions?</h3>
+						<h2>Come talk to me!</h2>
+						<p><a href="https://askeland.github.io/kds">askeland.github.io/kds</a></p>
+					</section>
+                    <section>
+                        <h2>Retrofit 1.9</h2>
+                        <h3><a href="http://2015.javazone.no/details.html?talk=52885d58f543433b4888266967509be10438f4151aadd7fa6b7c0cfc680954f8">Video</a> from JavaZone 2015</h3>
+                        <p><a href="https://askeland.github.io/retrofit">Slides</a></p>
+                    </section>
+					<section>
+						<h2>Retrofit 2</h2>
+						<p><a href="https://speakerdeck.com/jakewharton/simple-http-with-retrofit-2-droidcon-nyc-2015">DroidCon NYC 2015</a> by Jake Wharton
+					</section>
+				</section>
+				
+				<section data-background="img/golf_clap.gif">
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( '.highlight, pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+			
+			Reveal.addEventListener( 'ready', function( event ) {
+				var w = window,
+			    d = document,
+			    e = d.documentElement,
+			    g = d.getElementsByTagName('body')[0],
+			    x = w.innerWidth || e.clientWidth || g.clientWidth,
+			    y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+				
+			    // event.currentSlide, event.indexh, event.indexv
+			    var bg = document.getElementById("main-bg")
+			    bg.style.height = y + "px"
+			    bg.style.width = x + "px"
+			    bg.style.marginLeft = -((x - 960) / 2) + "px"
+			    bg.style.marginTop = (-((y - 700) / 2) -20) + "px"
+			} );
+
+		</script>
+
+	</body>
+</html>

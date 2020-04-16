@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title>Example minimum receiver</title>
+  <script src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+</head>
+<body style="background: #000">
+  
+	<p style="text-align: center; width: 100%; height: 100%">
+    <img id="image_view" 
+         style="height: 100%;" 
+         src="https://uc-02.jottacloud.com/thumbs/eyJ0IjoiMSIsImsiOiJBMWQifQ.zD-tgcgB470lMQk-yiMrXpV_lcPpD3uGMq1tLvhuQ1UcM-Sg4wthgSr-9YTLjBjV-s6ScT_ru7_A6E0h9ilUrOGnVFXZ3qMp3iVVi9EoBzp2Xdfssz7-BxM8vfhi-zs6.OhblG_69f_zU103L_Ze7IQ.l" />
+  </p>
+  
+  <script type="text/javascript">
+    (function () {
+        var mgr;
+        var bus;
+
+        window.onload = function () {
+            mgr = cast.receiver.CastReceiverManager.getInstance();
+            bus = mgr.getCastMessageBus('urn:x-cast:no.jottacloud.jottacloudphotos.cast');
+            mgr.start();
+        }
+    })();
+  </script>
+</body>
+</html>
